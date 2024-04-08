@@ -18,4 +18,4 @@ jobs:
         run: yarn install
         
       - name: Run E2E tests
-        run: {{ github.events.inputs.cli }}
+        run: ${{ github.events.inputs.cli }}
