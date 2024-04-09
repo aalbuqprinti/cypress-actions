@@ -2,16 +2,12 @@ name: Cypress Tests
 
 on: 
   workflow_dispatch:
-    inputs:
-      cli:
-        description: Run by node command
-        default: node runner.js
 
 jobs:
   cypress-electron-tests:
     runs-on: ubuntu-latest
     container:
-      image: cypress/browsers:node-20.12.0-chrome-123.0.6312.86-1-ff-124.0.2-edge-123.0.2420.65-1
+      image: cypress/browsers:node-18.15.0-chrome-106.0.5249.61-1-ff-99.0.1-edge-114.0.1823.51-1
       options: --user 1001 
       
     steps: 
@@ -22,4 +18,44 @@ jobs:
         run: yarn install
         
       - name: Run E2E tests
-        run: ${{ github.event.inputs.cli }}
+        run: node runner-electron.js
+    env: 
+      TARGER_TOKEN_ELECTRON: ${{ secrets.TARGER_TOKEN_ELECTRON }}
+      
+  cypress-chrome-tests:
+    needs: cypress-electron-tests
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:node-18.15.0-chrome-106.0.5249.61-1-ff-99.0.1-edge-114.0.1823.51-1
+      options: --user 1001 
+      
+    steps: 
+      - name: Get code
+        uses: actions/checkout@v4.1.2
+
+      - name: Install dependencies
+        run: yarn install
+        
+      - name: Run E2E tests
+        run: node runner-chrome.js
+    env: 
+      TARGER_TOKEN_CHROME: ${{ secrets.TARGER_TOKEN_CHROME }}
+      
+  cypress-firefox-tests:
+    needs: cypress-chrome-tests
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:node-18.15.0-chrome-106.0.5249.61-1-ff-99.0.1-edge-114.0.1823.51-1
+      options: --user 1001 
+      
+    steps: 
+      - name: Get code
+        uses: actions/checkout@v4.1.2
+
+      - name: Install dependencies
+        run: yarn install
+        
+      - name: Run E2E tests
+        run: node runner-firefox.js
+    env: 
+      TARGER_TOKEN_FIREFOX: ${{ secrets.TARGER_TOKEN_FIREFOX }}
