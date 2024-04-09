@@ -3,7 +3,7 @@ const tesults = require('cypress-tesults-reporter');
 
 const TOKEN = process.env.TARGER_TOKEN_ELECTRON,
 cypress.run({
-  // specs to run here
+  browser: 'electron'
 })
 .then((results) => {
   const args = {
