@@ -18,7 +18,7 @@ jobs:
         run: yarn install
         
       - name: Run E2E tests
-        run: node runner.js
+        run: node runner-electron.js
     env: 
       TARGER_TOKEN_ELECTRON: ${{ secrets.TARGER_TOKEN_ELECTRON }}
       
@@ -37,7 +37,7 @@ jobs:
         run: yarn install
         
       - name: Run E2E tests
-        run: node runner.js
+        run: node runner-chrome.js
     env: 
       TARGER_TOKEN_CHROME: ${{ secrets.TARGER_TOKEN_CHROME }}
       
@@ -56,6 +56,6 @@ jobs:
         run: yarn install
         
       - name: Run E2E tests
-        run: node runner.js
+        run: node runner-firefox.js.js
     env: 
       TARGER_TOKEN_FIREFOX: ${{ secrets.TARGER_TOKEN_FIREFOX }}
