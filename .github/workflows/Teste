@@ -1,0 +1,65 @@
+name: Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      cli:
+        description: Run by cypress command line
+        default: yarn cypress run --env allure=true
+
+jobs:
+  cypress-electron-tests:
+    runs-on: ubuntu-latest
+    container: 
+      image: cypress/browsers:node-18.16.1-chrome-114.0.5735.133-1-ff-114.0.2-edge-114.0.1823.51-1
+      options: --user 1001
+    strategy: 
+      fail-fast: false
+    steps:
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '17' # Escolha a versão do Java que você precisa instalar
+          
+      - name: Check Java version
+        run: java -version
+
+      - name: Set up Node.js
+        if: always()
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16' # Defina a versão do Node.js que você precisa
+
+      - name: Get code
+        uses: actions/checkout@v4.1.2
+        
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Run E2E tests
+        if: always()
+        run: ${{ github.event.inputs.cli }}
+            
+      - name: Run generate report
+        if: always()
+        run: yarn allure generate ./allure-results/ -o ./report-server
+        
+      - name: Save Cypress report artifact
+        if: always() 
+        uses: actions/upload-artifact@v2
+        with:
+          name: cypress-report
+          path: ./report-server/
+
+      - name: Run generate report
+        if: always()
+        run: node gerar.js
+
+      - name: Exibir Markdown no summary
+        run: |
+          echo "::set-output name=markdown::$(cat saida.md)"
+        id: show_markdown
+
+      - name: Visualizar tabela Markdown
+        run: echo "${{ steps.show_markdown.outputs.markdown }}"
